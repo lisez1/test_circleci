@@ -1,0 +1,170 @@
+#test
+
+version: 2.1
+jobs:
+  check:
+    docker:
+      - image: cimg/openjdk:8.0.282-browsers
+    steps:
+      - run:
+          name: Check JAVA
+          command: |
+            echo 'Check JAVA Version'
+            java -version
+      - run:
+          name: Check Unzip
+          command: |
+            echo 'Check Unzip'
+            unzip -v
+      - run:
+          name: Checking hostname
+          command: |
+            hostname
+            df
+            id
+
+  install_km:
+    docker:
+      - image: cimg/openjdk:8.0.282-browsers
+    parameters:
+      owner:
+        type: string
+      group:
+        type: string
+      directory:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: List File
+          command: |
+            echo 'List all files'
+            pwd
+            ls -al
+      - run:
+          name: Create folder
+          command: |
+            echo 'Create folder for keymanager'
+            sudo mkdir -p << parameters.directory >>
+            sudo chown -R << parameters.owner >>:<< parameters.group >> << parameters.directory >>
+      - run:
+          name: Unzip KeyManager Image
+          command: |
+            echo 'Unzip KeyManager'
+            tar zxvf ./keymanager/symphony-external-relay-centos-20.12.2_1.8-105.x86_64.tar.gz
+            ls -al ./symphony-external-relay-centos-20.12.2_1.8-105.x86_64
+            cp -Rp ./symphony-external-relay-centos-20.12.2_1.8-105.x86_64/* << parameters.directory >>
+            ls -al << parameters.directory >>
+      - run:
+          name: Setup Configuration Files
+          command: |
+            echo 'Copy keymanager.properties file'
+            cp -p ./keymanager/keymanager.properties << parameters.directory >>/config
+            echo 'Copy keymanager_config.json file'
+            cp -p ./keymanager/keymanager_config.json << parameters.directory >>/config
+            echo 'Copy environment.sh file'
+            cp -p ./keymanager/environment.sh << parameters.directory >>/config
+            echo 'Copy environment.sh file'
+            cp -p ./keymanager/environment.sh << parameters.directory >>/config
+            echo 'Copy isid-na-prod-chat-glb-1-hsm.jck file'
+            cp -p ./keymanager/isid-na-prod-chat-glb-1-hsm.jck << parameters.directory >>/config
+            chmod 755 << parameters.directory >>/sbin/*.sh
+      - run:
+          name: Create folders
+          command: |
+            echo 'Create cert folder'
+            mkdir << parameters.directory >>/cert
+            echo 'Create secure folder'
+            mkdir << parameters.directory >>/secure
+      - run:
+          name: Setup Certification Files
+          command: |
+            echo 'Copy keystore file'
+            cp -p ./keymanager/keystore << parameters.directory >>/cert
+            echo 'Copy truststore file'
+            cp -p ./keymanager/truststore << parameters.directory >>/cert
+
+  install_aapi:
+    docker:
+      - image: cimg/openjdk:8.0.282-browsers
+    parameters:
+      owner:
+        type: string
+      group:
+        type: string
+      directory:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: List File
+          command: |
+            echo 'List all files'
+            pwd
+            ls -al
+      - run:
+          name: Create folder
+          command: |
+            echo 'Create folder for aapi'
+            sudo mkdir -p << parameters.directory >>
+            sudo chown -R << parameters.owner >>:<< parameters.group >> << parameters.directory >>
+      - run:
+          name: Unzip AAPI Image
+          command: |
+            echo 'Unzip AAPI'
+            unzip ./agentapi/agent-2.62.2.zip -d << parameters.directory >>
+            ls -al << parameters.directory >>
+      - run:
+          name: Setup Configuration Files
+          command: |
+            echo 'Copy agent.yml file'
+            cp -p ./agentapi/agent.yml << parameters.directory >>
+            echo 'Copy start.sh file'
+            cp -p ./agentapi/startup.sh << parameters.directory >>
+            chmod 755 << parameters.directory >>/startup.sh
+      - run:
+          name: Create folders
+          command: |
+            echo 'Create cert folder'
+            mkdir << parameters.directory >>/cert
+            echo 'Create temp folder'
+            mkdir << parameters.directory >>/temp
+      - run:
+          name: Setup Certification Files
+          command: |
+            echo 'Copy keystore file'
+            cp -p ./agentapi/keystore << parameters.directory >>/cert
+            echo 'Copy truststore file'
+            cp -p ./agentapi/truststore << parameters.directory >>/cert
+            echo 'Copy Privatekey file'
+            cp -p ./agentapi/privatekey.pem << parameters.directory >>/cert
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - check:
+          filters:
+            branches:
+              ignore:
+                - master
+      - install_km:
+          filters:
+            branches:
+              only:
+                - keymanager
+          owner: circleci
+          group: circleci
+          directory: /opt/symphony/keymanager
+          requires:
+            - check
+      - install_aapi:
+          filters:
+            branches:
+              only:
+                - aapi
+          owner: circleci
+          group: circleci
+          directory: /opt/symphony/agent
+          requires:
+            - check

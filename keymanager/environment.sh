@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+KEYMANAGER_HOME="/opt/symphony/keymanager"
+LOG_DIR="${KEYMANAGER_HOME}/logs"
+JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-2.el7_6.x86_64/jre"
+KEYMANAGER_OPTS="-server -Xms5048m -Xmx5048m \
+-Djava.io.tmpdir=$KEYMANAGER_HOME/temp \
+-Djava.library.path=$KEYMANAGER_HOME/native/ \
+-Dcom.symphony.keymanager.home=$KEYMANAGER_HOME \
+-Dcom.symphony.keymanager.sdk.maxtotalconnections=2000 \
+-Dcom.symphony.keymanager.sdk.maxconnectionsperroute=1000 \
+-Dcom.symphony.km.resourceMonitoringIntervalMs=10000 \
+-Dcom.symphony.km.stressedPercentage=80 \
+-Dcom.symphony.km.relaxedPercentage=60 \
+-Dsymphony.cloud.logging.enableRemote=true \
+-Dsymphony.cloud.logging.cloudLoggerLevel=INFO \
+-Dservice.properties=$KEYMANAGER_HOME/conf/keymanager.properties \
+-Dspring.config.location=file:$KEYMANAGER_HOME/conf/keymanager.properties \
+-Dlog4j.configurationFile=$KEYMANAGER_HOME/conf/log4j2.xml \
+-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager \
+-Dserver.tomcat.accesslog.directory=$LOG_DIR \
+-Dmax.threads=2000 \
+-Daccess.control.allow.origin=symphony.com,isidsymphony.com \
+-Dsession.cookie.domain=.isidsymphony.com \
+-Djavax.net.ssl.keyStore=$KEYMANAGER_HOME/certs/keystore \
+-Djavax.net.ssl.trustStore=$KEYMANAGER_HOME/certs/truststore \
+-Dreceiver.pool.size=16 \
+-Duser.timezone=Asia/Tokyo \
+-Dhost.name=keymanager01.isidsymphony.com"
+PATH=$JAVA_HOME/bin:$JAVA_HOME/bin/jre:$PATH

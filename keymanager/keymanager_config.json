@@ -1,0 +1,35 @@
+{
+  "relay": {
+    "mode": "SoftHSM",
+    "partitionName": "partition_name_for_luna_hsm_only",
+    "ha-mk2015-1": "partition_password_for_luna_hsm_only",
+    "keystorePassword": "d2866c036db2802c5685c1b70d5a19e9c90bf584f5d430bcb0d464f8b63e8140a15dce663774a708",
+    "keystoreName": "isid-na-prod-chat-glb-1-hsm.jck",
+    "account": "keymanager",
+    "secret": "ly2ZHFXVaMzXGWK/DSqnPilVnhjJInphR7u26gJe3iA=",
+    "storagePassword": "session_storage_password",
+    "secureDir": "/opt/symphony/keymanager/secure/",
+    "entityKey": "FGRAJVjVRtTmyCLPiEFGUZ2GplXPtDYqZy6RQuUCc7M=",
+    "issuingCA": "false",
+    "allowRenewals": "true"
+  },
+  "companyurls": {
+    "applicationurl": "https://isid.symphony.com/client/index.html",
+    "baseurl": "https://isid.symphony.com",
+    "loginbaseurl": "https://isid.symphony.com",
+    "keymanagerurl": "https://km-loadbalancer.isidsymphony.com:443/relay"
+  },
+  "ssoconfig": {
+    "idp.entityid": "http://sso-<env>.symphony.com/adfs/services/trust",
+    "sp.entityid": "https://<env>.symphony.com",
+    "idp.ssoendpoint": "https://sso-<env>.symphony.com/adfs/ls",
+    "sp.acsurl": "https://localhost.symphony.com:8443/relay/sso/acs",
+    "idp.signingcertificate": "sso-<env>.symphony.com.cer",
+    "ssoenabled": "false"
+  },
+  "sessionmanagement": {
+    "disableSkeyAuthentication": "false",
+    "sessionencryptionkey": "FGRAJVjVRtTmyCLPiEFGUZ2GplXPtDYqZy6RQuUCc7M=",
+    "enforceCsrfValidation": "true"
+  }
+}
