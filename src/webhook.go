@@ -67,7 +67,8 @@ func (botClient *botClient) postWebhook(w http.ResponseWriter, r *http.Request) 
 	var sendMessageText string
 
 	if incomingWebhookRequest.Itemid != "" {
-		sendMessageText += urlHandler(incomingWebhookRequest.Itemid)
+//		sendMessageText += urlHandler(incomingWebhookRequest.Itemid)
+        sendMessageText = "new file uploaded"
 	}
 
 	log.Info("the message converted to MLformat : " + sendMessageText)
